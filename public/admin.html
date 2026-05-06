@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DeliveryPada — Painel Admin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --wheat-50: #FFFDF0;
+            --wheat-100: #FFF8D6;
+            --wheat-200: #FFEEA3;
+            --wheat-300: #FFE070;
+            --wheat-400: #FFD03D;
+            --wheat-500: #E8B931;
+            --wheat-600: #C99A1D;
+            --wheat-700: #A07614;
+            --coffee-50: #F5EFEB;
+            --coffee-100: #E8D5C4;
+            --coffee-200: #D4B896;
+            --coffee-300: #B8916A;
+            --coffee-400: #9C7049;
+            --coffee-500: #7B5B3A;
+            --coffee-600: #5D4037;
+            --coffee-700: #4A2C2A;
+            --coffee-800: #3E2723;
+            --coffee-900: #2C1A17;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+            background: var(--wheat-50);
+            color: var(--coffee-800);
+            min-height: 100vh;
+        }
+
+        /* ── Header ─────────────────────────── */
+        .header {
+            background: linear-gradient(135deg, var(--coffee-800), var(--coffee-700));
+            color: var(--wheat-200);
+            padding: 1rem 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            box-shadow: 0 4px 20px rgba(62,39,35,0.3);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .header-left span.emoji { font-size: 2rem; }
+        .header h1 { font-size: 1.25rem; font-weight: 800; }
+        .header p { font-size: 0.7rem; color: var(--wheat-400); opacity: 0.7; }
+
+        .header-stats {
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        .stat-badge {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.4rem 0.9rem;
+            border-radius: 999px;
+            font-size: 0.8rem;
+            font-weight: 700;
+        }
+
+        .stat-pending {
+            background: rgba(255,208,61,0.2);
+            color: var(--wheat-400);
+            border: 1px solid rgba(255,208,61,0.3);
+        }
+
+        .stat-done {
+            background: rgba(34,197,94,0.15);
+            color: #4ade80;
+            border: 1px solid rgba(34,197,94,0.2);
+        }
+
+        /* ── Layout ─────────────────────────── */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1.5rem;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .grid { grid-template-columns: 1fr; }
+        }
+
+        /* ── Section ────────────────────────── */
+        .section-title {
+            font-size: 1rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 2px solid var(--coffee-100);
+        }
+
+        .section-title .count {
+            background: var(--coffee-800);
+            color: var(--wheat-200);
+            font-size: 0.7rem;
+            padding: 0.15rem 0.5rem;
+            border-radius: 999px;
+        }
+
+        /* ── Cards ──────────────────────────── */
+        .order-card {
+            background: white;
+            border-radius: 1rem;
+            border: 1px solid var(--coffee-100);
+            overflow: hidden;
+            margin-bottom: 0.75rem;
+            box-shadow: 0 2px 12px rgba(62,39,35,0.06);
+            transition: transform 0.15s, box-shadow 0.15s;
+        }
+
+        .order-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(62,39,35,0.12);
+        }
+
+        .order-card.done {
+            opacity: 0.65;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.85rem 1rem;
+            background: linear-gradient(135deg, var(--wheat-100), var(--wheat-50));
+            border-bottom: 1px solid var(--wheat-200);
+        }
+
+        .card-id {
+            font-weight: 800;
+            font-size: 0.95rem;
+            color: var(--coffee-700);
+        }
+
+        .card-time {
+            font-size: 0.7rem;
+            color: var(--coffee-300);
+            font-weight: 500;
+        }
+
+        .card-status {
+            font-size: 0.65rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            padding: 0.2rem 0.6rem;
+            border-radius: 999px;
+        }
+
+        .status-pendente {
+            background: #FEF3C7;
+            color: #D97706;
+        }
+
+        .status-concluido {
+            background: #D1FAE5;
+            color: #059669;
+        }
+
+        .card-body { padding: 1rem; }
+
+        .client-info {
+            display: flex;
+            flex-direction: column;
+            gap: 0.35rem;
+            margin-bottom: 0.75rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px dashed var(--coffee-100);
+        }
+
+        .client-info span {
+            font-size: 0.8rem;
+            color: var(--coffee-500);
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .client-info .name {
+            font-weight: 700;
+            font-size: 0.9rem;
+            color: var(--coffee-800);
+        }
+
+        .items-list {
+            list-style: none;
+            margin-bottom: 0.75rem;
+        }
+
+        .items-list li {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.78rem;
+            color: var(--coffee-500);
+            padding: 0.25rem 0;
+        }
+
+        .items-list li span:last-child {
+            font-weight: 600;
+            color: var(--coffee-700);
+        }
+
+        .card-total {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 0.6rem;
+            border-top: 1px solid var(--coffee-100);
+        }
+
+        .card-total span:first-child {
+            font-weight: 700;
+            font-size: 0.85rem;
+        }
+
+        .card-total span:last-child {
+            font-weight: 800;
+            font-size: 1.1rem;
+            color: var(--wheat-700);
+        }
+
+        .card-actions {
+            display: flex;
+            gap: 0.5rem;
+            padding: 0.75rem 1rem;
+            background: var(--wheat-50);
+            border-top: 1px solid var(--coffee-100);
+        }
+
+        .btn {
+            flex: 1;
+            padding: 0.6rem 1rem;
+            border: none;
+            border-radius: 0.6rem;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.78rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.15s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.35rem;
+        }
+
+        .btn:active { transform: scale(0.96); }
+
+        .btn-complete {
+            background: linear-gradient(135deg, #22c55e, #16a34a);
+            color: white;
+            box-shadow: 0 3px 10px rgba(34,197,94,0.3);
+        }
+
+        .btn-complete:hover { box-shadow: 0 5px 15px rgba(34,197,94,0.4); }
+
+        .btn-delete {
+            background: white;
+            color: #ef4444;
+            border: 1px solid #fecaca;
+        }
+
+        .btn-delete:hover { background: #fef2f2; }
+
+        /* ── Empty state ────────────────────── */
+        .empty-state {
+            text-align: center;
+            padding: 2.5rem 1rem;
+            color: var(--coffee-300);
+        }
+
+        .empty-state .emoji { font-size: 3rem; margin-bottom: 0.5rem; }
+        .empty-state p { font-size: 0.85rem; }
+
+        /* ── Connection status ──────────────── */
+        .conn-status {
+            position: fixed;
+            bottom: 1rem;
+            right: 1rem;
+            padding: 0.5rem 1rem;
+            border-radius: 999px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            background: var(--coffee-800);
+            color: var(--wheat-200);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            z-index: 100;
+        }
+
+        .conn-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: #4ade80;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 4px #22c55e; }
+            50% { box-shadow: 0 0 12px #22c55e; }
+        }
+
+        @keyframes fadeSlideIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .order-card { animation: fadeSlideIn 0.3s ease-out forwards; }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <div class="header">
+        <div class="header-left">
+            <span class="emoji">🥐</span>
+            <div>
+                <h1>DeliveryPada</h1>
+                <p>Painel de Gerenciamento</p>
+            </div>
+        </div>
+        <div class="header-stats">
+            <div class="stat-badge stat-pending">
+                🟡 <span id="pending-count">0</span> Pendentes
+            </div>
+            <div class="stat-badge stat-done">
+                ✅ <span id="done-count">0</span> Concluídos
+            </div>
+        </div>
+    </div>
+
+    <!-- Content -->
+    <div class="container">
+        <div class="grid">
+            <!-- Pendentes -->
+            <div>
+                <div class="section-title">
+                    🟡 Pedidos Pendentes
+                    <span class="count" id="pending-badge">0</span>
+                </div>
+                <div id="pending-list"></div>
+            </div>
+
+            <!-- Concluídos -->
+            <div>
+                <div class="section-title">
+                    ✅ Pedidos Concluídos
+                    <span class="count" id="done-badge">0</span>
+                </div>
+                <div id="done-list"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Connection indicator -->
+    <div class="conn-status">
+        <span class="conn-dot"></span>
+        Atualizando em tempo real
+    </div>
+
+    <script>
+        const API = 'http://localhost:3001/api/pedidos';
+
+        /* ── Formatar moeda ──────────────── */
+        function fmtBRL(v) {
+            return v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+        }
+
+        /* ── Formatar data ───────────────── */
+        function fmtData(iso) {
+            const d = new Date(iso);
+            return d.toLocaleString('pt-BR', {
+                day: '2-digit', month: '2-digit',
+                hour: '2-digit', minute: '2-digit'
+            });
+        }
+
+        /* ── Renderizar card ─────────────── */
+        function renderCard(pedido) {
+            const isPending = pedido.status === 'pendente';
+
+            const itensHTML = pedido.produtos
+                .map(p => `<li><span>${p.quantidade}x ${p.nome}</span><span>${fmtBRL(p.subtotal)}</span></li>`)
+                .join('');
+
+            const actionsHTML = isPending
+                ? `<div class="card-actions">
+                       <button class="btn btn-complete" onclick="concluirPedido(${pedido.id})">✅ Marcar Entregue</button>
+                       <button class="btn btn-delete" onclick="excluirPedido(${pedido.id})">🗑️ Excluir</button>
+                   </div>`
+                : `<div class="card-actions">
+                       <button class="btn btn-delete" onclick="excluirPedido(${pedido.id})">🗑️ Remover</button>
+                   </div>`;
+
+            return `
+                <div class="order-card ${isPending ? '' : 'done'}">
+                    <div class="card-header">
+                        <div>
+                            <span class="card-id">Pedido #${pedido.id}</span>
+                            <div class="card-time">📅 ${fmtData(pedido.criadoEm || pedido.dataHora)}</div>
+                        </div>
+                        <span class="card-status ${isPending ? 'status-pendente' : 'status-concluido'}">
+                            ${isPending ? '⏳ Pendente' : '✅ Entregue'}
+                        </span>
+                    </div>
+                    <div class="card-body">
+                        <div class="client-info">
+                            <span class="name">👤 ${pedido.cliente.nome}</span>
+                            <span>📍 ${pedido.cliente.endereco}</span>
+                            <span>📱 ${pedido.cliente.whatsapp}</span>
+                        </div>
+                        <ul class="items-list">${itensHTML}</ul>
+                        <div class="card-total">
+                            <span>Total</span>
+                            <span>${fmtBRL(pedido.total)}</span>
+                        </div>
+                    </div>
+                    ${actionsHTML}
+                </div>`;
+        }
+
+        /* ── Carregar pedidos ────────────── */
+        async function carregarPedidos() {
+            try {
+                const res = await fetch(API);
+                const pedidos = await res.json();
+
+                const pendentes = pedidos.filter(p => p.status === 'pendente');
+                const concluidos = pedidos.filter(p => p.status === 'concluido');
+
+                // Update counters
+                document.getElementById('pending-count').textContent = pendentes.length;
+                document.getElementById('done-count').textContent = concluidos.length;
+                document.getElementById('pending-badge').textContent = pendentes.length;
+                document.getElementById('done-badge').textContent = concluidos.length;
+
+                // Render lists
+                const pendingList = document.getElementById('pending-list');
+                const doneList = document.getElementById('done-list');
+
+                pendingList.innerHTML = pendentes.length
+                    ? pendentes.map(renderCard).join('')
+                    : '<div class="empty-state"><div class="emoji">🎉</div><p>Nenhum pedido pendente!</p></div>';
+
+                doneList.innerHTML = concluidos.length
+                    ? concluidos.map(renderCard).join('')
+                    : '<div class="empty-state"><div class="emoji">📭</div><p>Nenhum pedido concluído ainda.</p></div>';
+
+            } catch (err) {
+                console.error('Erro ao carregar pedidos:', err);
+            }
+        }
+
+        /* ── Concluir pedido ─────────────── */
+        async function concluirPedido(id) {
+            try {
+                await fetch(`${API}/${id}/concluir`, { method: 'PUT' });
+                carregarPedidos();
+            } catch (err) {
+                alert('Erro ao concluir pedido.');
+            }
+        }
+
+        /* ── Excluir pedido ──────────────── */
+        async function excluirPedido(id) {
+            if (!confirm(`Excluir o pedido #${id}?`)) return;
+            try {
+                await fetch(`${API}/${id}`, { method: 'DELETE' });
+                carregarPedidos();
+            } catch (err) {
+                alert('Erro ao excluir pedido.');
+            }
+        }
+
+        /* ── Inicializar ─────────────────── */
+        carregarPedidos();
+        setInterval(carregarPedidos, 10000); // Auto-refresh a cada 10s
+    </script>
+</body>
+</html>
